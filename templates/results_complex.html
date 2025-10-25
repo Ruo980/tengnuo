@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分析结果 - PSM双资源池部署分析工具</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <!-- 成功通知弹窗 -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <strong class="me-auto">分析完成</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                PSM双资源池部署分析已成功完成！
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-4">
+        <!-- 头部信息区域 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow glass-card">
+                    <div class="card-header glass-header d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-graph-up-arrow fs-2 me-3"></i>
+                            <div>
+                                <h2 class="mb-0">PSM双资源池部署分析结果</h2>
+                                <p class="mb-0 mt-1 text-white-50">智能资源腾挪分析报告</p>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-light" onclick="window.print()">
+                                <i class="bi bi-printer me-2"></i>打印报告
+                            </button>
+                            <a href="/" class="btn btn-light">
+                                <i class="bi bi-arrow-left me-2"></i>返回首页
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body glass-body">
+                        <div class="row g-4">
+                            <!-- 查询参数卡片 -->
+                            <div class="col-lg-4">
+                                <div class="card h-100 bg-transparent border-primary border-opacity-25">
+                                    <div class="card-header bg-primary bg-opacity-10 border-primary border-opacity-25">
+                                        <h5 class="card-title mb-0">
+                                            <i class="bi bi-funnel me-2 text-primary"></i>查询参数
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <i class="bi bi-geo-alt text-info me-2"></i>
+                                            <div>
+                                                <strong class="text-white">机房范围：</strong>
+                                                <span class="text-muted">{{ idc_list or '全部机房' }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <i class="bi bi-arrow-up-circle text-warning me-2"></i>
+                                            <div>
+                                                <strong class="text-white">资源池1(需借出)：</strong>
+                                                <span class="badge bg-warning text-dark">{{ pool1 }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-arrow-down-circle text-success me-2"></i>
+                                            <div>
+                                                <strong class="text-white">资源池2(可补充)：</strong>
+                                                <span class="badge bg-success">{{ pool2 }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 统计信息卡片 -->
+                            <div class="col-lg-8">
+                                <div class="card h-100 bg-transparent border-success border-opacity-25">
+                                    <div class="card-header bg-success bg-opacity-10 border-success border-opacity-25">
+                                        <h5 class="card-title mb-0">
+                                            <i class="bi bi-bar-chart me-2 text-success"></i>统计概览
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-container">
+                                            {{ stats_table|safe }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 操作按钮区 -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <button class="btn btn-outline-info" onclick="toggleTableView('summary')">
+                                            <i class="bi bi-table me-2"></i>资源汇总视图
+                                        </button>
+                                        <button class="btn btn-outline-info" onclick="toggleTableView('detail')">
+                                            <i class="bi bi-list-ul me-2"></i>详细数据视图
+                                        </button>
+                                    </div>
+                                    <a href="/download/{{ excel_file }}" class="btn btn-success">
+                                        <i class="bi bi-download me-2"></i>下载Excel报告
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 资源汇总表格 -->
+        <div class="row mb-4" id="summarySection">
+            <div class="col-12">
+                <div class="card shadow glass-card">
+                    <div class="card-header glass-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-pie-chart fs-4 me-3 text-warning"></i>
+                                <div>
+                                    <h3 class="mb-0">资源汇总分析</h3>
+                                    <p class="mb-0 mt-1 text-white-50">按PSM和资源池分组的资源使用情况</p>
+                                </div>
+                            </div>
+                            <div class="header-stats">
+                                <span class="badge bg-warning text-dark fs-6">优先级排序</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body glass-body p-0">
+                        <div class="table-container">
+                            <table id="summaryTable" class="table table-hover mb-0" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        {% for column in summary_columns %}
+                                        <th>
+                                            <div class="d-flex align-items-center">
+                                                {% if column == 'psm' %}
+                                                    <i class="bi bi-box me-2"></i>
+                                                {% elif column == 'pool_identifier' %}
+                                                    <i class="bi bi-server me-2"></i>
+                                                {% elif column == 'instance_num' %}
+                                                    <i class="bi bi-layers me-2"></i>
+                                                {% elif column == 'cpu_limit' %}
+                                                    <i class="bi bi-cpu me-2"></i>
+                                                {% elif column == 'mem_limit' %}
+                                                    <i class="bi bi-memory me-2"></i>
+                                                {% endif %}
+                                                {{ column }}
+                                            </div>
+                                        </th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 数据将通过JavaScript动态加载 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 详细数据表格 -->
+        <div class="row mb-4" id="detailSection">
+            <div class="col-12">
+                <div class="card shadow glass-card">
+                    <div class="card-header glass-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-table fs-4 me-3 text-info"></i>
+                                <div>
+                                    <h3 class="mb-0">详细数据分析</h3>
+                                    <p class="mb-0 mt-1 text-white-50">完整的PSM部署详情和配置信息</p>
+                                </div>
+                            </div>
+                            <div class="header-stats">
+                                <span class="badge bg-info fs-6">完整视图</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body glass-body p-0">
+                        <div class="table-container">
+                            <table id="detailTable" class="table table-hover mb-0" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        {% for column in detail_columns %}
+                                        <th>
+                                            <div class="d-flex align-items-center">
+                                                {% if column == 'psm' %}
+                                                    <i class="bi bi-box me-2"></i>
+                                                {% elif column == 'pool_identifier' %}
+                                                    <i class="bi bi-server me-2"></i>
+                                                {% elif column == 'physical_cluster' %}
+                                                    <i class="bi bi-hdd-stack me-2"></i>
+                                                {% elif column == 'iaas_cluster' %}
+                                                    <i class="bi bi-cloud me-2"></i>
+                                                {% elif column == 'instance_num' %}
+                                                    <i class="bi bi-layers me-2"></i>
+                                                {% elif column == 'cpu_limit' %}
+                                                    <i class="bi bi-cpu me-2"></i>
+                                                {% elif column == 'mem_limit' %}
+                                                    <i class="bi bi-memory me-2"></i>
+                                                {% elif column == 'idc' %}
+                                                    <i class="bi bi-geo-alt me-2"></i>
+                                                {% endif %}
+                                                {{ column }}
+                                            </div>
+                                        </th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 数据将通过JavaScript动态加载 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer mt-5 py-3">
+        <div class="container text-center">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <span class="text-muted">© 2024 PSM分析工具</span>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex justify-content-center gap-3">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <span class="text-muted small">分析完成</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex justify-content-center gap-2">
+                        <span class="badge bg-primary">高级版本</span>
+                        <span class="badge bg-success">数据准确</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- 返回顶部按钮 -->
+    <button id="backToTop" class="btn btn-primary position-fixed bottom-0 end-0 m-4 rounded-circle" style="width: 50px; height: 50px; display: none; z-index: 1000;">
+        <i class="bi bi-arrow-up"></i>
+    </button>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+    
+    <script>
+        // 详细数据
+        const detailData = {{ detail_data|safe }};
+        // 汇总数据
+        const summaryData = {{ summary_data|safe }};
+        
+        $(document).ready(function() {
+            // 显示成功提示
+            const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+            successToast.show();
+
+            // 初始化详细数据表格
+            const detailTable = $('#detailTable').DataTable({
+                "data": detailData,
+                "columns": [
+                    {% for column in detail_columns %}
+                    { 
+                        "data": "{{ column }}",
+                        "render": function(data, type, row) {
+                            if ("{{ column }}" === "pool_identifier") {
+                                return '<div class="pool-indicator">' + data + '</div>';
+                            }
+                            return data;
+                        }
+                    }{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                "dom": "Bfrtip",
+                "buttons": [
+                    {
+                        extend: "copy",
+                        text: '<i class="bi bi-clipboard me-1"></i>复制',
+                        className: "btn-secondary"
+                    },
+                    {
+                        extend: "excel",
+                        text: '<i class="bi bi-file-earmark-excel me-1"></i>Excel',
+                        className: "btn-success"
+                    },
+                    {
+                        extend: "csv",
+                        text: '<i class="bi bi-filetype-csv me-1"></i>CSV',
+                        className: "btn-info"
+                    },
+                    {
+                        extend: "print",
+                        text: '<i class="bi bi-printer me-1"></i>打印',
+                        className: "btn-secondary"
+                    }
+                ],
+                "pageLength": 25,
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/zh.json"
+                },
+                "order": [], // 保持服务器端排序
+                "createdRow": function(row, data, dataIndex) {
+                    // 根据资源池标识设置行颜色
+                    if (data.pool_identifier === "{{ pool1 }}") {
+                        $(row).addClass("table-warning"); // 需借出的资源池
+                    } else if (data.pool_identifier === "{{ pool2 }}") {
+                        $(row).addClass("table-success"); // 可补充的资源池
+                    }
+                },
+                "responsive": true,
+                "scrollX": true
+            });
+            
+            // 初始化汇总数据表格
+            const summaryTable = $('#summaryTable').DataTable({
+                "data": summaryData,
+                "columns": [
+                    {% for column in summary_columns %}
+                    { 
+                        "data": "{{ column }}",
+                        "render": function(data, type, row) {
+                            if ("{{ column }}" === "pool_identifier") {
+                                return '<div class="pool-indicator">' + data + '</div>';
+                            }
+                            return data;
+                        }
+                    }{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                "dom": "Bfrtip",
+                "buttons": [
+                    {
+                        extend: "copy",
+                        text: '<i class="bi bi-clipboard me-1"></i>复制',
+                        className: "btn-secondary"
+                    },
+                    {
+                        extend: "excel",
+                        text: '<i class="bi bi-file-earmark-excel me-1"></i>Excel',
+                        className: "btn-success"
+                    },
+                    {
+                        extend: "csv",
+                        text: '<i class="bi bi-filetype-csv me-1"></i>CSV',
+                        className: "btn-info"
+                    },
+                    {
+                        extend: "print",
+                        text: '<i class="bi bi-printer me-1"></i>打印',
+                        className: "btn-secondary"
+                    }
+                ],
+                "pageLength": 25,
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/zh.json"
+                },
+                "order": [], // 保持服务器端排序
+                "createdRow": function(row, data, dataIndex) {
+                    // 根据资源池标识设置行颜色
+                    if (data.pool_identifier === "{{ pool1 }}") {
+                        $(row).addClass("table-warning"); // 需借出的资源池
+                    } else if (data.pool_identifier === "{{ pool2 }}") {
+                        $(row).addClass("table-success"); // 可补充的资源池
+                    }
+                },
+                "responsive": true,
+                "scrollX": true
+            });
+
+            // 返回顶部按钮
+            $(window).scroll(function() {
+                if ($(this).scrollTop() > 300) {
+                    $('#backToTop').fadeIn();
+                } else {
+                    $('#backToTop').fadeOut();
+                }
+            });
+
+            $('#backToTop').click(function() {
+                $('html, body').animate({scrollTop: 0}, 600);
+                return false;
+            });
+        });
+
+        // 切换表格视图
+        function toggleTableView(view) {
+            if (view === 'summary') {
+                document.getElementById('summarySection').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            } else if (view === 'detail') {
+                document.getElementById('detailSection').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+    </script>
+</body>
+</html>

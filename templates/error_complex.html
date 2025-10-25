@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>错误 - PSM双资源池部署分析工具</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <!-- 错误页面装饰元素 -->
+    <div class="error-shapes">
+        <div class="error-shape error-shape-1"></div>
+        <div class="error-shape error-shape-2"></div>
+        <div class="error-shape error-shape-3"></div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="card shadow glass-card">
+                    <div class="card-header glass-header text-center">
+                        <div class="error-icon-container mb-3">
+                            <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 4rem;"></i>
+                        </div>
+                        <h2 class="mb-0">哎呀！出错了</h2>
+                        <p class="mb-0 mt-2 text-white-50">分析过程中遇到了一些问题</p>
+                    </div>
+                    <div class="card-body glass-body">
+                        <div class="alert glass-alert alert-danger">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-bug-fill fs-3 me-3 text-danger"></i>
+                                <div class="flex-grow-1">
+                                    <h5 class="alert-heading mb-2">
+                                        <i class="bi bi-exclamation-circle me-2"></i>错误信息
+                                    </h5>
+                                    <p class="mb-0 fs-5">{{ error }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if details %}
+                        <div class="mt-4">
+                            <div class="card bg-dark bg-opacity-25 border-warning border-opacity-25">
+                                <div class="card-header bg-warning bg-opacity-10 border-warning border-opacity-25">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-code-slash me-2 text-warning"></i>技术详细信息
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <pre class="bg-dark bg-opacity-50 p-3 rounded text-light small overflow-auto" style="max-height: 300px;"><code>{{ details }}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- 解决方案建议 -->
+                        <div class="mt-4">
+                            <div class="card bg-info bg-opacity-10 border-info border-opacity-25">
+                                <div class="card-header bg-info bg-opacity-10 border-info border-opacity-25">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-lightbulb me-2 text-info"></i>解决建议
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-2">
+                                            <i class="bi bi-check-circle text-success me-2"></i>
+                                            检查资源池格式是否正确 (格式: Physical Cluster/IaaS Cluster)
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="bi bi-check-circle text-success me-2"></i>
+                                            确认数据源文件是否存在且格式正确
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="bi bi-check-circle text-success me-2"></i>
+                                            验证输入的机房名称是否有效
+                                        </li>
+                                        <li class="mb-0">
+                                            <i class="bi bi-check-circle text-success me-2"></i>
+                                            尝试重新刷新页面或重新开始分析
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 操作按钮 -->
+                        <div class="row g-3 mt-4">
+                            <div class="col-md-6">
+                                <a href="/" class="btn btn-primary btn-lg w-100">
+                                    <i class="bi bi-house me-2"></i>返回首页
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn btn-outline-secondary btn-lg w-100" onclick="window.history.back()">
+                                    <i class="bi bi-arrow-left me-2"></i>返回上页
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 联系支持 -->
+                        <div class="text-center mt-4 pt-3 border-top border-secondary border-opacity-25">
+                            <p class="text-muted mb-2">如果问题持续存在，请联系技术支持</p>
+                            <div class="d-flex justify-content-center gap-3">
+                                <button class="btn btn-outline-info btn-sm" onclick="copyErrorDetails()">
+                                    <i class="bi bi-clipboard me-1"></i>复制错误信息
+                                </button>
+                                <button class="btn btn-outline-success btn-sm" onclick="reportBug()">
+                                    <i class="bi bi-bug me-1"></i>报告问题
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer mt-5 py-4">
+        <div class="container text-center">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <span class="text-muted">© 2024 PSM分析工具</span>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex justify-content-center gap-3">
+                        <i class="bi bi-shield-x text-warning"></i>
+                        <span class="text-muted small">服务异常</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex justify-content-center gap-2">
+                        <span class="badge bg-warning text-dark">需要帮助</span>
+                        <span class="badge bg-danger">错误页面</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <script>
+        // 复制错误详情
+        function copyErrorDetails() {
+            const errorText = `错误信息: {{ error|replace('\n', '\\n')|replace('"', '\\"') }}
+{% if details %}
+技术详情: {{ details|replace('\n', '\\n')|replace('"', '\\"') }}
+{% endif %}
+时间: ${new Date().toLocaleString()}
+页面: ${window.location.href}`;
+            
+            navigator.clipboard.writeText(errorText).then(() => {
+                showNotification('错误信息已复制到剪贴板', 'success');
+            }).catch(() => {
+                showNotification('复制失败，请手动选择文本', 'error');
+            });
+        }
+        
+        // 报告错误
+        function reportBug() {
+            const subject = encodeURIComponent('PSM分析工具 - 错误报告');
+            const body = encodeURIComponent(`错误信息: {{ error|replace('\n', '\\n')|replace('"', '\\"') }}
+
+请描述您进行的操作步骤:
+1. 
+2. 
+3. 
+
+时间: ${new Date().toLocaleString()}
+页面: ${window.location.href}`);
+            
+            window.open(`mailto:support@example.com?subject=${subject}&body=${body}`);
+        }
+        
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const card = document.querySelector('.glass-card');
+            if (card) {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px) scale(0.95)';
+                card.style.transition = 'all 0.6s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0) scale(1)';
+                }, 100);
+            }
+        });
+    </script>
+    
+    <style>
+        /* 错误页面装饰形状 */
+        .error-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .error-shape {
+            position: absolute;
+            opacity: 0.05;
+            animation: errorFloat 8s ease-in-out infinite;
+        }
+
+        .error-shape-1 {
+            top: 15%;
+            left: 10%;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, #ef4444, #f97316);
+            border-radius: 30%;
+            animation-delay: 0s;
+        }
+
+        .error-shape-2 {
+            top: 60%;
+            right: 15%;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #f59e0b, #eab308);
+            border-radius: 50%;
+            animation-delay: 3s;
+        }
+
+        .error-shape-3 {
+            bottom: 20%;
+            left: 20%;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, #dc2626, #b91c1c);
+            border-radius: 20%;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes errorFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            25% { transform: translateY(-15px) rotate(90deg) scale(1.1); }
+            50% { transform: translateY(10px) rotate(180deg) scale(0.9); }
+            75% { transform: translateY(-5px) rotate(270deg) scale(1.05); }
+        }
+
+        .error-icon-container {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</body>
+</html>

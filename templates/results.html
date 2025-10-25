@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分析结果 - PSM双资源池部署分析工具</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow glass-card">
+                    <div class="card-header glass-header d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0">PSM双资源池部署分析结果</h2>
+                        <a href="/" class="btn btn-light">返回首页</a>
+                    </div>
+                    <div class="card-body glass-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="alert alert-info glass-alert">
+                                    <h5>查询参数</h5>
+                                    <p><strong>机房：</strong> {{ idc_list or '全部' }}</p>
+                                    <p><strong>资源池1(需借出)：</strong> {{ pool1 }}</p>
+                                    <p><strong>资源池2(可补充)：</strong> {{ pool2 }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="alert alert-success glass-alert">
+                                    <h5>统计信息</h5>
+                                    {{ stats_table|safe }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-3">
+                            <a href="/download/{{ excel_file }}" class="btn btn-success">
+                                <i class="bi bi-download"></i> 下载Excel文件
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow glass-card">
+                    <div class="card-header glass-header">
+                        <h3 class="mb-0">资源汇总</h3>
+                    </div>
+                    <div class="card-body glass-body">
+                        <div class="table-responsive">
+                            <table id="summaryTable" class="table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        {% for column in summary_columns %}
+                                        <th>{{ column }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 数据将通过JavaScript动态加载 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow glass-card">
+                    <div class="card-header glass-header">
+                        <h3 class="mb-0">详细数据</h3>
+                    </div>
+                    <div class="card-body glass-body">
+                        <div class="table-responsive">
+                            <table id="detailTable" class="table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        {% for column in detail_columns %}
+                                        <th>{{ column }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 数据将通过JavaScript动态加载 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer mt-5 py-3 glass-card">
+        <div class="container text-center">
+            <span class="text-muted">PSM双资源池部署分析工具 &copy; 2023</span>
+        </div>
+    </footer>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+    
+    <script>
+        // 详细数据
+        const detailData = {{ detail_data|safe }};
+        // 汇总数据
+        const summaryData = {{ summary_data|safe }};
+        
+        $(document).ready(function() {
+            // 初始化详细数据表格
+            const detailTable = $('#detailTable').DataTable({
+                "data": detailData,
+                "columns": [
+                    {% for column in detail_columns %}
+                    { "data": "{{ column }}" }{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                "dom": "Bfrtip",
+                "buttons": [
+                    "copy", "excel", "csv", "print"
+                ],
+                "pageLength": 25,
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/zh.json"
+                },
+                "order": [], // 保持服务器端排序
+                "createdRow": function(row, data, dataIndex) {
+                    // 根据资源池标识设置行颜色
+                    if (data.pool_identifier === "{{ pool1 }}") {
+                        $(row).addClass("table-warning"); // 需借出的资源池
+                    } else if (data.pool_identifier === "{{ pool2 }}") {
+                        $(row).addClass("table-success"); // 可补充的资源池
+                    }
+                }
+            });
+            
+            // 初始化汇总数据表格
+            const summaryTable = $('#summaryTable').DataTable({
+                "data": summaryData,
+                "columns": [
+                    {% for column in summary_columns %}
+                    { "data": "{{ column }}" }{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                "dom": "Bfrtip",
+                "buttons": [
+                    "copy", "excel", "csv", "print"
+                ],
+                "pageLength": 25,
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/zh.json"
+                },
+                "order": [], // 保持服务器端排序
+                "createdRow": function(row, data, dataIndex) {
+                    // 根据资源池标识设置行颜色
+                    if (data.pool_identifier === "{{ pool1 }}") {
+                        $(row).addClass("table-warning"); // 需借出的资源池
+                    } else if (data.pool_identifier === "{{ pool2 }}") {
+                        $(row).addClass("table-success"); // 可补充的资源池
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

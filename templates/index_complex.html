@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSM双资源池部署分析工具</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <!-- 背景装饰元素 -->
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="card shadow glass-card">
+                    <div class="card-header glass-header text-center">
+                        <div class="header-content">
+                            <i class="bi bi-diagram-3 fs-1 mb-3 text-white"></i>
+                            <h1 class="mb-0">PSM双资源池部署分析工具</h1>
+                            <p class="mb-0 mt-2 text-white-50">智能资源腾挪分析平台</p>
+                        </div>
+                    </div>
+                    <div class="card-body glass-body">
+                        <div class="alert glass-alert">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-info-circle-fill fs-4 me-3 text-info"></i>
+                                <div>
+                                    <h5 class="alert-heading mb-2">功能说明</h5>
+                                    <p class="mb-2"><strong>核心目标：</strong>本工具用于查找可以从第一个资源池腾挪资源并在第二个资源池补充实例的PSM服务。</p>
+                                    <hr class="my-3 opacity-50">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p class="mb-1"><i class="bi bi-arrow-up-circle text-warning me-2"></i><strong>第一个资源池</strong> - 需要借出资源的集群</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p class="mb-1"><i class="bi bi-arrow-down-circle text-success me-2"></i><strong>第二个资源池</strong> - 可以补充资源的集群</p>
+                                        </div>
+                                    </div>
+                                    <p class="mb-0 mt-2 text-muted"><i class="bi bi-lightbulb me-2"></i>结果将按第一个资源池的实例数从大到小排序，方便找到可腾挪资源的服务。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form action="/analyze" method="post" class="mt-4" id="analysisForm">
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <label for="idc" class="form-label">
+                                        <i class="bi bi-geo-alt me-2"></i>机房名称
+                                        <span class="badge bg-secondary ms-2">可选</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="idc" 
+                                           name="idc" 
+                                           placeholder="多个机房用逗号分隔，留空表示不过滤 (例如：MY,SH,BJ)">
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="bi bi-info-circle me-1"></i>支持多机房筛选，提高分析精度
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="pool1" class="form-label">
+                                        <i class="bi bi-server me-2"></i>第一个资源池 
+                                        <span class="badge bg-warning text-dark ms-2">
+                                            <i class="bi bi-arrow-up me-1"></i>需借出
+                                        </span>
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="pool1" 
+                                           name="pool1" 
+                                           placeholder="格式: Physical Cluster/IaaS Cluster" 
+                                           required>
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="bi bi-example"></i>例如：Oscar/default
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="pool2" class="form-label">
+                                        <i class="bi bi-database me-2"></i>第二个资源池 
+                                        <span class="badge bg-success ms-2">
+                                            <i class="bi bi-arrow-down me-1"></i>可补充
+                                        </span>
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="pool2" 
+                                           name="pool2" 
+                                           placeholder="格式: Physical Cluster/IaaS Cluster" 
+                                           required>
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="bi bi-example"></i>例如：Zelda/default
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 mt-5">
+                                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                    <i class="bi bi-play-circle me-2"></i>
+                                    <span class="btn-text">开始分析</span>
+                                    <div class="spinner-border spinner-border-sm d-none ms-2" role="status" id="loadingSpinner">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- 快速示例 -->
+                        <div class="mt-4">
+                            <div class="card bg-dark bg-opacity-25 border-0">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="bi bi-lightning me-2 text-warning"></i>快速示例
+                                    </h6>
+                                    <div class="row g-2">
+                                        <div class="col-md-6">
+                                            <button type="button" class="btn btn-outline-info btn-sm w-100" onclick="fillExample('oscar', 'zelda')">
+                                                Oscar → Zelda
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <button type="button" class="btn btn-outline-info btn-sm w-100" onclick="fillExample('mario', 'link')">
+                                                Mario → Link
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer mt-5 py-4">
+        <div class="container text-center">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <span class="text-muted">© 2024 PSM分析工具</span>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex justify-content-center gap-3">
+                        <i class="bi bi-shield-check text-success"></i>
+                        <span class="text-muted small">安全可靠</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex justify-content-center gap-2">
+                        <span class="badge bg-primary">v2.0</span>
+                        <span class="badge bg-success">企业级</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <style>
+        /* 浮动装饰形状 */
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape-1 {
+            top: 10%;
+            left: 10%;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #6366f1, #06b6d4);
+            border-radius: 50%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            top: 20%;
+            right: 15%;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #10b981, #f59e0b);
+            border-radius: 30%;
+            animation-delay: 2s;
+        }
+
+        .shape-3 {
+            bottom: 20%;
+            left: 20%;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, #ef4444, #8b5cf6);
+            border-radius: 20%;
+            animation-delay: 4s;
+        }
+
+        .shape-4 {
+            bottom: 30%;
+            right: 10%;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(45deg, #06b6d4, #6366f1);
+            border-radius: 50%;
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(120deg); }
+            66% { transform: translateY(10px) rotate(240deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+    </style>
+</body>
+</html>

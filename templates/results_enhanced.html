@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多资源池分析结果 - 增强版</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow glass-card">
+                    <div class="card-header glass-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="mb-0">
+                                <i class="bi bi-graph-up-arrow me-2"></i>多资源池分析结果
+                            </h2>
+                            <p class="mb-0 mt-1 text-white-50">智能资源腾挪分析 - 增强版报告</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="/" class="btn btn-light">
+                                <i class="bi bi-arrow-left me-2"></i>返回首页
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body glass-body">
+                        <div class="row g-4">
+                            <div class="col-lg-4">
+                                <div class="card border-danger">
+                                    <div class="card-header bg-danger text-white">
+                                        <h5 class="mb-0">
+                                            <i class="bi bi-arrow-up-circle me-2"></i>目标资源池
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <h6>{{ target_pool }}</h6>
+                                        <p class="mb-1">PSM数量: {{ target_stats.psm_count }}</p>
+                                        <p class="mb-1">实例总数: {{ target_stats.total_instances }}</p>
+                                        <p class="mb-1">CPU总数: {{ "%.1f"|format(target_stats.total_cpu) }}核</p>
+                                        <p class="mb-0">内存总数: {{ "%.1f"|format(target_stats.total_memory) }}GB</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="card border-success">
+                                    <div class="card-header bg-success text-white">
+                                        <h5 class="mb-0">
+                                            <i class="bi bi-arrow-down-circle me-2"></i>候选资源池
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <h6>{{ candidate_pools|length }} 个候选池</h6>
+                                        {% set matching_count = processed_results.values() | selectattr('detailed_data', 'length') | list | length %}
+                                        <p class="mb-1">匹配成功: {{ matching_count }} 个</p>
+                                        <p class="mb-1">无匹配: {{ candidate_pools|length - matching_count }} 个</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="card border-info">
+                                    <div class="card-header bg-info text-white">
+                                        <h5 class="mb-0">
+                                            <i class="bi bi-download me-2"></i>操作
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <a href="/download/{{ excel_file }}" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-file-earmark-excel me-1"></i>下载完整报告
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                {% for candidate_pool, result in processed_results.items() %}
+                {% if result.detailed_data %}
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-hdd-network me-2"></i>{{ candidate_pool }}
+                            <span class="badge bg-light text-dark ms-2">
+                                {{ result.stats.matching_psm_count }} 个匹配PSM
+                            </span>
+                        </h4>
+                        <small class="text-light">
+                            资源统计: {{ result.stats.candidate_pool_resources.total_instances }}实例, 
+                            {{ "%.1f"|format(result.stats.candidate_pool_resources.total_cpu) }}CPU, 
+                            {{ "%.1f"|format(result.stats.candidate_pool_resources.total_memory) }}GB内存
+                        </small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h5>资源汇总</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                {% for col in result.summary_columns %}
+                                                <th>{{ col }}</th>
+                                                {% endfor %}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for row in result.summary_data %}
+                                            <tr>
+                                                {% for col in result.summary_columns %}
+                                                <td>{{ row[col] }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6">
+                                <h5>详细数据</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                {% for col in result.detailed_columns %}
+                                                <th>{{ col }}</th>
+                                                {% endfor %}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for row in result.detailed_data[:10] %}
+                                            <tr>
+                                                {% for col in result.detailed_columns %}
+                                                <td>{{ row[col] }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    {% if result.detailed_data|length > 10 %}
+                                    <small class="text-muted">显示前10条记录，完整数据请下载Excel报告</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card shadow mb-4 border-warning">
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="mb-0">
+                            <i class="bi bi-exclamation-triangle me-2"></i>{{ candidate_pool }}
+                            <span class="badge bg-dark ms-2">无匹配</span>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">该候选资源池与目标资源池没有共同的PSM服务，无法用于资源腾挪。</p>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 为每个表格初始化DataTables
+            $('table').each(function(index) {
+                if ($(this).find('tbody tr').length > 5) {
+                    $(this).DataTable({
+                        pageLength: 10,
+                        order: [],
+                        language: {
+                            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/zh.json'
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

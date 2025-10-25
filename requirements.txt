@@ -1,0 +1,5 @@
+# PSM双资源池部署分析工具 - 依赖包
+pandas>=1.3.0
+openpyxl>=3.0.7
+flask>=2.0.1
+numpy>=1.20.0

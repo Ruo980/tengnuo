@@ -1,0 +1,901 @@
+/* PSM双资源池部署分析工具 - 样式表 */
+
+/* 主题变量 */
+:root {
+    /* 深色主题变量 */
+    --dark-bg-primary: #0f172a;
+    --dark-bg-secondary: #334155;
+    --dark-bg-gradient: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+    --dark-text-primary: #e2e8f0;
+    --dark-text-secondary: #94a3b8;
+    --dark-card-bg: rgba(30, 41, 59, 0.7);
+    --dark-header-bg: rgba(79, 70, 229, 0.8);
+    --dark-alert-bg: rgba(14, 165, 233, 0.15);
+    --dark-alert-border: rgba(14, 165, 233, 0.3);
+    --dark-alert-text: #bae6fd;
+    --dark-border-color: rgba(100, 116, 139, 0.18);
+    --dark-input-bg: rgba(30, 41, 59, 0.7);
+    --dark-input-border: rgba(100, 116, 139, 0.3);
+    --dark-input-focus-border: rgba(99, 102, 241, 0.6);
+    --dark-input-focus-shadow: rgba(99, 102, 241, 0.2);
+    --dark-btn-primary-bg: rgba(79, 70, 229, 0.85);
+    --dark-btn-primary-border: rgba(99, 102, 241, 0.3);
+    --dark-btn-success-bg: rgba(16, 185, 129, 0.85);
+    --dark-btn-success-border: rgba(16, 185, 129, 0.3);
+    --dark-btn-light-bg: rgba(100, 116, 139, 0.3);
+    --dark-btn-light-border: rgba(100, 116, 139, 0.2);
+    --dark-table-header-bg: rgba(51, 65, 85, 0.8);
+    --dark-table-border: rgba(100, 116, 139, 0.3);
+    --dark-table-hover-bg: rgba(99, 102, 241, 0.15);
+    
+    /* 亮色主题变量 */
+    --light-bg-primary: #f8fafc;
+    --light-bg-secondary: #e2e8f0;
+    --light-bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    --light-text-primary: #1e293b;
+    --light-text-secondary: #475569;
+    --light-card-bg: rgba(255, 255, 255, 0.8);
+    --light-header-bg: rgba(79, 70, 229, 0.9);
+    --light-alert-bg: rgba(14, 165, 233, 0.1);
+    --light-alert-border: rgba(14, 165, 233, 0.3);
+    --light-alert-text: #0369a1;
+    --light-border-color: rgba(100, 116, 139, 0.1);
+    --light-input-bg: rgba(255, 255, 255, 0.9);
+    --light-input-border: rgba(100, 116, 139, 0.2);
+    --light-input-focus-border: rgba(79, 70, 229, 0.6);
+    --light-input-focus-shadow: rgba(79, 70, 229, 0.2);
+    --light-btn-primary-bg: rgba(79, 70, 229, 0.9);
+    --light-btn-primary-border: rgba(79, 70, 229, 0.3);
+    --light-btn-success-bg: rgba(16, 185, 129, 0.9);
+    --light-btn-success-border: rgba(16, 185, 129, 0.3);
+    --light-btn-light-bg: rgba(226, 232, 240, 0.9);
+    --light-btn-light-border: rgba(226, 232, 240, 0.3);
+    --light-table-header-bg: rgba(226, 232, 240, 0.8);
+    --light-table-border: rgba(100, 116, 139, 0.2);
+    --light-table-hover-bg: rgba(99, 102, 241, 0.1);
+}
+
+/* 主题变量定义 */
+:root {
+    /* 深色主题变量 */
+    --dark-bg-gradient-from: #0f172a;
+    --dark-bg-gradient-to: #1e293b;
+    --dark-text-color: #e2e8f0;
+    --dark-text-primary: #e2e8f0;
+    --dark-text-muted: #64748b;
+    --dark-border-color: rgba(100, 116, 139, 0.18);
+    --dark-card-bg: rgba(30, 41, 59, 0.7);
+    --dark-header-bg: rgba(79, 70, 229, 0.8);
+    --dark-input-bg: rgba(30, 41, 59, 0.7);
+    --dark-input-border: rgba(100, 116, 139, 0.3);
+    --dark-input-focus-border: rgba(99, 102, 241, 0.6);
+    --dark-input-focus-shadow: rgba(99, 102, 241, 0.2);
+    --dark-table-border: rgba(100, 116, 139, 0.3);
+    --dark-alert-bg: rgba(14, 165, 233, 0.15);
+    --dark-alert-border: rgba(14, 165, 233, 0.3);
+    --dark-alert-text: #bae6fd;
+    
+    /* 按钮颜色 - 深色主题 */
+    --dark-btn-primary-bg: rgba(79, 70, 229, 0.85);
+    --dark-btn-primary-border: rgba(79, 70, 229, 0.5);
+    --dark-btn-primary-hover-bg: rgba(79, 70, 229, 1);
+    --dark-btn-primary-hover-border: rgba(79, 70, 229, 0.8);
+    --dark-btn-primary-shadow: rgba(79, 70, 229, 0.3);
+    --dark-btn-secondary-bg: rgba(100, 116, 139, 0.85);
+    --dark-btn-secondary-border: rgba(100, 116, 139, 0.5);
+    --dark-btn-secondary-hover-bg: rgba(100, 116, 139, 1);
+    --dark-btn-secondary-hover-border: rgba(100, 116, 139, 0.8);
+    --dark-btn-secondary-shadow: rgba(100, 116, 139, 0.3);
+    --dark-btn-success-bg: rgba(16, 185, 129, 0.85);
+    --dark-btn-success-border: rgba(16, 185, 129, 0.3);
+    --dark-btn-light-bg: rgba(100, 116, 139, 0.3);
+    --dark-btn-light-border: rgba(100, 116, 139, 0.2);
+    --dark-btn-text: #ffffff;
+    
+    /* 主色调 - 深色主题 */
+    --dark-primary-color: #4f46e5;
+    --dark-primary-color-darker: #4338ca;
+    --dark-primary-color-darkest: #3730a3;
+    --dark-primary-shadow: rgba(79, 70, 229, 0.25);
+    
+    /* 亮色主题变量 */
+    --light-bg-gradient-from: #f8fafc;
+    --light-bg-gradient-to: #e2e8f0;
+    --light-text-color: #1e293b;
+    --light-text-primary: #1e293b;
+    --light-text-muted: #64748b;
+    --light-border-color: rgba(100, 116, 139, 0.18);
+    --light-card-bg: rgba(255, 255, 255, 0.7);
+    --light-header-bg: rgba(79, 70, 229, 0.8);
+    --light-input-bg: rgba(255, 255, 255, 0.9);
+    --light-input-border: rgba(100, 116, 139, 0.3);
+    --light-input-focus-border: rgba(99, 102, 241, 0.6);
+    --light-input-focus-shadow: rgba(99, 102, 241, 0.2);
+    --light-table-border: rgba(100, 116, 139, 0.2);
+    --light-alert-bg: rgba(14, 165, 233, 0.1);
+    --light-alert-border: rgba(14, 165, 233, 0.2);
+    --light-alert-text: #0284c7;
+    
+    /* 按钮颜色 - 亮色主题 */
+    --light-btn-primary-bg: rgba(79, 70, 229, 0.85);
+    --light-btn-primary-border: rgba(79, 70, 229, 0.5);
+    --light-btn-primary-hover-bg: rgba(79, 70, 229, 1);
+    --light-btn-primary-hover-border: rgba(79, 70, 229, 0.8);
+    --light-btn-primary-shadow: rgba(79, 70, 229, 0.3);
+    --light-btn-secondary-bg: rgba(100, 116, 139, 0.85);
+    --light-btn-secondary-border: rgba(100, 116, 139, 0.5);
+    --light-btn-secondary-hover-bg: rgba(100, 116, 139, 1);
+    --light-btn-secondary-hover-border: rgba(100, 116, 139, 0.8);
+    --light-btn-secondary-shadow: rgba(100, 116, 139, 0.3);
+    --light-btn-success-bg: rgba(16, 185, 129, 0.85);
+    --light-btn-success-border: rgba(16, 185, 129, 0.3);
+    --light-btn-light-bg: rgba(226, 232, 240, 0.5);
+    --light-btn-light-border: rgba(226, 232, 240, 0.3);
+    --light-btn-text: #ffffff;
+    
+    /* 主色调 - 亮色主题 */
+    --light-primary-color: #4f46e5;
+    --light-primary-color-darker: #4338ca;
+    --light-primary-color-darkest: #3730a3;
+    --light-primary-shadow: rgba(79, 70, 229, 0.25);
+}
+
+/* 全局样式 */
+body {
+    font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: all 0.3s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 主内容区域 */
+.main-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+    width: 100%;
+}
+
+/* 响应式容器 */
+.container-fluid {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* 卡片响应式调整 */
+.card {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+@media (max-width: 576px) {
+    .card {
+        margin: 0 0.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .card {
+        max-width: 750px;
+    }
+}
+
+@media (min-width: 992px) {
+    .card {
+        max-width: 900px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .card {
+        max-width: 1000px;
+    }
+}
+
+/* 深色主题 */
+body.dark-theme {
+    background: linear-gradient(135deg, var(--dark-bg-gradient-from) 0%, var(--dark-bg-gradient-to) 100%);
+    background-attachment: fixed;
+    color: var(--dark-text-color);
+}
+
+/* 亮色主题 */
+body.light-theme {
+    background: linear-gradient(135deg, var(--light-bg-gradient-from) 0%, var(--light-bg-gradient-to) 100%);
+    background-attachment: fixed;
+    color: var(--light-text-color);
+}
+
+/* 系统主题跟随 */
+@media (prefers-color-scheme: dark) {
+    body:not(.light-theme):not(.dark-theme) {
+        background: linear-gradient(135deg, var(--dark-bg-gradient-from) 0%, var(--dark-bg-gradient-to) 100%);
+        background-attachment: fixed;
+        color: var(--dark-text-color);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    body:not(.light-theme):not(.dark-theme) {
+        background: linear-gradient(135deg, var(--light-bg-gradient-from) 0%, var(--light-bg-gradient-to) 100%);
+        background-attachment: fixed;
+        color: var(--light-text-color);
+    }
+}
+
+/* 毛玻璃效果 - 深色主题 */
+body.dark-theme .glass-card {
+    background: var(--dark-card-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--dark-border-color);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* 暗色主题表单标签样式 */
+body.dark-theme .form-label {
+    color: #ffffff;
+}
+
+body.dark-theme .glass-header {
+    background: var(--dark-header-bg) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--dark-border-color);
+    padding: 1.25rem 1.5rem;
+}
+
+body.dark-theme .glass-body {
+    background: rgba(30, 41, 59, 0.5);
+    padding: 1.5rem;
+}
+
+body.dark-theme .glass-alert {
+    background-color: var(--dark-alert-bg);
+    border: 1px solid var(--dark-alert-border);
+    color: var(--dark-alert-text);
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+/* 毛玻璃效果 - 亮色主题 */
+body.light-theme .glass-card {
+    background: var(--light-card-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--light-border-color);
+    box-shadow: 0 8px 15px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+body.light-theme .glass-header {
+    background: var(--light-header-bg) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--light-border-color);
+    padding: 1.25rem 1.5rem;
+}
+
+body.light-theme .glass-body {
+    background: rgba(255, 255, 255, 0.5);
+    padding: 1.5rem;
+}
+
+body.light-theme .glass-alert {
+    background-color: var(--light-alert-bg);
+    border: 1px solid var(--light-alert-border);
+    color: var(--light-alert-text);
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+/* 默认毛玻璃效果（系统主题跟随） */
+@media (prefers-color-scheme: dark) {
+    body:not(.light-theme):not(.dark-theme) .glass-card {
+        background: var(--dark-card-bg);
+        border: 1px solid var(--dark-border-color);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .glass-header {
+        background: var(--dark-header-bg) !important;
+        border-bottom: 1px solid var(--dark-border-color);
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .glass-body {
+        background: rgba(30, 41, 59, 0.5);
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .glass-alert {
+        background-color: var(--dark-alert-bg);
+        border: 1px solid var(--dark-alert-border);
+        color: var(--dark-alert-text);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    body:not(.light-theme):not(.dark-theme) .glass-card {
+        background: var(--light-card-bg);
+        border: 1px solid var(--light-border-color);
+        box-shadow: 0 8px 15px 0 rgba(0, 0, 0, 0.1);
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .glass-header {
+        background: var(--light-header-bg) !important;
+        border-bottom: 1px solid var(--light-border-color);
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .glass-body {
+        background: rgba(255, 255, 255, 0.5);
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .glass-alert {
+        background-color: var(--light-alert-bg);
+        border: 1px solid var(--light-alert-border);
+        color: var(--light-alert-text);
+    }
+}
+
+/* 通用毛玻璃效果 */
+.glass-card {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.glass-header {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 1.25rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.glass-body {
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.glass-alert {
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+/* 页面标题 */
+.card-header h2, .card-header h3 {
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+/* 表格样式增强 */
+.table {
+    font-size: 0.95rem;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: #e2e8f0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead th {
+    background-color: rgba(51, 65, 85, 0.8);
+    font-weight: 600;
+    vertical-align: middle;
+    border-bottom: 2px solid rgba(100, 116, 139, 0.3);
+    color: #ffffff;
+    padding: 12px 15px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+/* 资源池颜色标识 */
+.table-warning {
+    background-color: rgba(234, 179, 8, 0.15) !important;
+    color: #fef3c7;
+}
+
+.table-success {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    color: #d1fae5;
+}
+
+/* 数据表格搜索框和分页控件 - 深色主题 */
+body.dark-theme .dataTables_wrapper .dataTables_filter input {
+    border: 1px solid var(--dark-input-border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-left: 8px;
+    background-color: var(--dark-input-bg);
+    color: var(--dark-text-primary);
+    transition: all 0.3s ease;
+}
+
+body.dark-theme .dataTables_wrapper .dataTables_filter input:focus {
+    outline: none;
+    border-color: var(--dark-input-focus-border);
+    box-shadow: 0 0 0 3px var(--dark-input-focus-shadow);
+}
+
+body.dark-theme .dataTables_wrapper .dataTables_length select {
+    border: 1px solid var(--dark-input-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 0 4px;
+    background-color: var(--dark-input-bg);
+    color: var(--dark-text-primary);
+}
+
+body.dark-theme .dataTables_wrapper .dataTables_info,
+body.dark-theme .dataTables_wrapper .dataTables_paginate {
+    color: var(--dark-text-primary);
+    margin-top: 15px;
+}
+
+/* 数据表格搜索框和分页控件 - 亮色主题 */
+body.light-theme .dataTables_wrapper .dataTables_filter input {
+    border: 1px solid var(--light-input-border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-left: 8px;
+    background-color: var(--light-input-bg);
+    color: var(--light-text-primary);
+    transition: all 0.3s ease;
+}
+
+body.light-theme .dataTables_wrapper .dataTables_filter input:focus {
+    outline: none;
+    border-color: var(--light-input-focus-border);
+    box-shadow: 0 0 0 3px var(--light-input-focus-shadow);
+}
+
+body.light-theme .dataTables_wrapper .dataTables_length select {
+    border: 1px solid var(--light-input-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 0 4px;
+    background-color: var(--light-input-bg);
+    color: var(--light-text-primary);
+}
+
+body.light-theme .dataTables_wrapper .dataTables_info,
+body.light-theme .dataTables_wrapper .dataTables_paginate {
+    color: var(--light-text-primary);
+    margin-top: 15px;
+}
+
+/* 数据表格搜索框和分页控件 - 系统主题跟随 */
+@media (prefers-color-scheme: dark) {
+    body:not(.light-theme):not(.dark-theme) .dataTables_wrapper .dataTables_filter input {
+        border: 1px solid var(--dark-input-border);
+        background-color: var(--dark-input-bg);
+        color: var(--dark-text-primary);
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .dataTables_wrapper .dataTables_filter input:focus {
+        border-color: var(--dark-input-focus-border);
+        box-shadow: 0 0 0 3px var(--dark-input-focus-shadow);
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .dataTables_wrapper .dataTables_length select {
+        border: 1px solid var(--dark-input-border);
+        background-color: var(--dark-input-bg);
+        color: var(--dark-text-primary);
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .dataTables_wrapper .dataTables_info,
+    body:not(.light-theme):not(.dark-theme) .dataTables_wrapper .dataTables_paginate {
+        color: var(--dark-text-primary);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    body:not(.light-theme):not(.dark-theme) .dataTables_wrapper .dataTables_filter input {
+        border: 1px solid var(--light-input-border);
+        background-color: var(--light-input-bg);
+        color: var(--light-text-primary);
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .dataTables_wrapper .dataTables_filter input:focus {
+        border-color: var(--light-input-focus-border);
+        box-shadow: 0 0 0 3px var(--light-input-focus-shadow);
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .dataTables_wrapper .dataTables_length select {
+        border: 1px solid var(--light-input-border);
+        background-color: var(--light-input-bg);
+        color: var(--light-text-primary);
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .dataTables_wrapper .dataTables_info,
+    body:not(.light-theme):not(.dark-theme) .dataTables_wrapper .dataTables_paginate {
+        color: var(--light-text-primary);
+    }
+}
+
+/* 通用数据表格控件样式 */
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+    margin-top: 15px;
+}
+
+/* 按钮样式 */
+.dt-buttons .btn,
+.btn {
+    margin-right: 5px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    padding: 10px 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.dt-buttons .btn:hover,
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* 按钮样式 - 深色主题 */
+body.dark-theme .btn-primary {
+    background: var(--dark-btn-primary-bg);
+    border: 1px solid var(--dark-btn-primary-border);
+    color: #ffffff;
+}
+
+body.dark-theme .btn-success {
+    background: var(--dark-btn-success-bg);
+    border: 1px solid var(--dark-btn-success-border);
+    color: #ffffff;
+}
+
+body.dark-theme .btn-light {
+    background: var(--dark-btn-light-bg);
+    border: 1px solid var(--dark-btn-light-border);
+    color: var(--dark-text-primary);
+}
+
+body.dark-theme .btn-light:hover {
+    background: rgba(100, 116, 139, 0.5);
+    color: #ffffff;
+}
+
+/* 按钮样式 - 亮色主题 */
+body.light-theme .btn-primary {
+    background: var(--light-btn-primary-bg);
+    border: 1px solid var(--light-btn-primary-border);
+    color: #ffffff;
+}
+
+body.light-theme .btn-success {
+    background: var(--light-btn-success-bg);
+    border: 1px solid var(--light-btn-success-border);
+    color: #ffffff;
+}
+
+body.light-theme .btn-light {
+    background: var(--light-btn-light-bg);
+    border: 1px solid var(--light-btn-light-border);
+    color: var(--light-text-primary);
+}
+
+body.light-theme .btn-light:hover {
+    background: rgba(226, 232, 240, 0.7);
+    color: var(--light-text-primary);
+}
+
+/* 主题切换按钮 */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    transform: rotate(30deg);
+}
+
+.theme-toggle i {
+    font-size: 1.5rem;
+}
+
+body.dark-theme .theme-toggle {
+    color: var(--dark-text-primary);
+    background-color: var(--dark-card-bg);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+body.light-theme .theme-toggle {
+    color: var(--light-text-primary);
+    background-color: var(--light-card-bg);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 表格响应式调整 */
+@media (max-width: 768px) {
+    .table {
+        font-size: 0.85rem;
+    }
+    
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_length {
+        text-align: left;
+        margin-bottom: 10px;
+    }
+    
+    .main-content {
+        padding: 1rem 0;
+    }
+    
+    .card {
+        margin: 0 0.5rem;
+        border-radius: 8px;
+    }
+    
+    .glass-header {
+        padding: 1rem;
+    }
+    
+    .glass-body {
+        padding: 1rem;
+    }
+    
+    h2, .h2 {
+        font-size: 1.5rem;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-content {
+        padding: 0.5rem 0;
+    }
+    
+    .card {
+        margin: 0.25rem;
+        border-radius: 6px;
+    }
+    
+    .glass-header {
+        padding: 0.75rem;
+    }
+    
+    .glass-body {
+        padding: 0.75rem;
+    }
+    
+    h2, .h2 {
+        font-size: 1.25rem;
+    }
+    
+    .alert {
+        padding: 0.75rem;
+    }
+}
+
+/* 确保页脚在小屏幕上也有良好显示 */
+@media (max-width: 768px) {
+    .footer {
+        padding: 1rem 0;
+        font-size: 0.875rem;
+    }
+}
+
+/* 页脚样式 */
+.footer {
+    padding: 1.5rem 0;
+    border-top: 1px solid rgba(100, 116, 139, 0.2);
+    margin-top: auto;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.footer .text-muted {
+    color: #94a3b8 !important;
+    font-weight: 500;
+}
+
+/* 固定页脚样式 */
+.footer-fixed {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* 卡片阴影效果 */
+.card.shadow {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 表格行悬停效果 */
+.table-hover tbody tr:hover {
+    background-color: rgba(99, 102, 241, 0.15) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+    color: #ffffff;
+}
+
+/* 统计信息表格 */
+.alert-success .table {
+    margin-bottom: 0;
+}
+
+/* 数据表格按钮组 */
+.dt-buttons {
+    margin-bottom: 1rem;
+}
+
+/* 表格筛选高亮 */
+.dataTables_wrapper .dataTables_filter mark {
+    background-color: rgba(234, 179, 8, 0.6);
+    padding: 2px 0;
+    border-radius: 3px;
+    color: #000;
+    font-weight: 600;
+}
+
+/* 表单控件焦点样式 - 深色主题 */
+body.dark-theme .form-control:focus {
+    background-color: rgba(30, 41, 59, 0.8);
+    border-color: rgba(99, 102, 241, 0.6);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    color: #ffffff;
+}
+
+/* 表单控件焦点样式 - 亮色主题 */
+body.light-theme .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(99, 102, 241, 0.6);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    color: var(--light-text-primary);
+}
+
+/* 表单标签样式 - 深色主题 */
+body.dark-theme label {
+    color: var(--dark-text-primary);
+}
+
+/* 表单标签样式 - 亮色主题 */
+body.light-theme label {
+    color: var(--light-text-primary);
+}
+
+/* 表单帮助文本样式 - 深色主题 */
+body.dark-theme .form-text {
+    color: var(--dark-text-secondary);
+}
+
+/* 表单帮助文本样式 - 亮色主题 */
+body.light-theme .form-text {
+    color: var(--light-text-secondary);
+}
+
+/* 已在前面定义了更好的focus样式，删除这个重复的定义 */
+
+/* 表格分页按钮 - 深色主题 */
+body.dark-theme .page-item.active .page-link {
+    background-color: var(--dark-btn-primary-bg);
+    border-color: var(--dark-btn-primary-border);
+    color: #ffffff;
+}
+
+body.dark-theme .page-link {
+    color: var(--dark-text-primary);
+    background-color: var(--dark-input-bg);
+    border-color: var(--dark-table-border);
+    margin: 0 2px;
+    border-radius: 4px;
+}
+
+body.dark-theme .page-link:hover {
+    color: #ffffff;
+    background-color: rgba(79, 70, 229, 0.5);
+    border-color: var(--dark-btn-primary-border);
+}
+
+/* 表格分页按钮 - 亮色主题 */
+body.light-theme .page-item.active .page-link {
+    background-color: var(--light-btn-primary-bg);
+    border-color: var(--light-btn-primary-border);
+    color: #ffffff;
+}
+
+body.light-theme .page-link {
+    color: var(--light-text-primary);
+    background-color: var(--light-input-bg);
+    border-color: var(--light-table-border);
+    margin: 0 2px;
+    border-radius: 4px;
+}
+
+body.light-theme .page-link:hover {
+    color: #ffffff;
+    background-color: rgba(79, 70, 229, 0.5);
+    border-color: var(--light-btn-primary-border);
+}
+
+/* 表格分页按钮 - 系统主题跟随 */
+@media (prefers-color-scheme: dark) {
+    body:not(.light-theme):not(.dark-theme) .page-item.active .page-link {
+        background-color: var(--dark-btn-primary-bg);
+        border-color: var(--dark-btn-primary-border);
+        color: #ffffff;
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .page-link {
+        color: var(--dark-text-primary);
+        background-color: var(--dark-input-bg);
+        border-color: var(--dark-table-border);
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .page-link:hover {
+        color: #ffffff;
+        background-color: rgba(79, 70, 229, 0.5);
+        border-color: var(--dark-btn-primary-border);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    body:not(.light-theme):not(.dark-theme) .page-item.active .page-link {
+        background-color: var(--light-btn-primary-bg);
+        border-color: var(--light-btn-primary-border);
+        color: #ffffff;
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .page-link {
+        color: var(--light-text-primary);
+        background-color: var(--light-input-bg);
+        border-color: var(--light-table-border);
+    }
+    
+    body:not(.light-theme):not(.dark-theme) .page-link:hover {
+        color: #ffffff;
+        background-color: rgba(79, 70, 229, 0.5);
+        border-color: var(--light-btn-primary-border);
+    }
+}

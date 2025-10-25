@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Excel files
+test.xlsx
+*.xlsx
+!/all.xlsx
+!/all-test.xlsx
+
+# Outputs
+outputs/
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Virtual environments
+venv/
+env/
+pyvenv/
+conda-env/

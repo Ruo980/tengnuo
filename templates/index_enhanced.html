@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多资源池分析系统 - 增强版</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <main class="main-content">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-11 col-lg-10">
+                    <div class="card shadow glass-card">
+                    <div class="card-header glass-header">
+                        <h2 class="text-center mb-0">
+                            <i class="bi bi-hdd-network me-2"></i>多资源池分析系统 - 增强版
+                        </h2>
+                    </div>
+                    <div class="card-body glass-body">
+                        <div class="alert glass-alert">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-lightbulb-fill me-2 fs-4 text-warning"></i>
+                                <h5 class="mb-0">功能增强说明</h5>
+                            </div>
+                            <p><strong>核心升级：</strong>支持多个候选资源池同时分析，智能选择最佳腾挪方案</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><i class="bi bi-arrow-up-circle text-danger me-2"></i><strong>目标资源池</strong> - 需要借出资源的集群</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><i class="bi bi-arrow-down-circle text-success me-2"></i><strong>候选资源池</strong> - 多个可补充资源的集群</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form action="/analyze" method="post" class="mt-4">
+                            <div class="mb-4">
+                                <label for="idc" class="form-label fw-bold">
+                                    <i class="bi bi-building me-2"></i>机房名称
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                    <input type="text" class="form-control" id="idc" name="idc" 
+                                           placeholder="多个机房用逗号分隔，留空表示不过滤 (例如：MY,SH)">
+                                </div>
+                                <div class="form-text">可选，不填则不过滤机房</div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="target_pool" class="form-label fw-bold">
+                                    <i class="bi bi-arrow-up-circle me-2"></i>目标资源池 
+                                    <span class="badge bg-danger">需借出</span> <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-hdd-rack"></i></span>
+                                    <input type="text" class="form-control" id="target_pool" name="target_pool" 
+                                           placeholder="格式: Physical Cluster/IaaS Cluster (例如：Oscar/default)" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="candidate_pools" class="form-label fw-bold">
+                                    <i class="bi bi-arrow-down-circle me-2"></i>候选资源池 
+                                    <span class="badge bg-success">可补充</span> <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-hdd-network"></i></span>
+                                    <textarea class="form-control" id="candidate_pools" name="candidate_pools" 
+                                              rows="3" 
+                                              placeholder="多个资源池用逗号分隔
+格式: Physical Cluster/IaaS Cluster
+例如：Zelda/default,Alpha/default,Beta/default" required></textarea>
+                                </div>
+                                <div class="form-text">支持同时分析多个候选资源池，系统将分别计算每个候选池的匹配情况</div>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <h6><i class="bi bi-info-circle me-2"></i>使用提示</h6>
+                                <ul class="mb-0">
+                                    <li>系统会分别分析目标资源池与每个候选资源池的匹配情况</li>
+                                    <li>结果按目标资源池实例数降序排序，方便选择最佳腾挪方案</li>
+                                    <li>支持下载详细Excel报告，包含所有候选池的分析结果</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="d-grid gap-2 mt-5">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-search me-2"></i>开始多资源池分析
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="footer footer-fixed py-4 glass-card">
+        <div class="container text-center">
+            <span><i class="bi bi-building-gear me-2"></i>多资源池分析系统 v2.0 &copy; 2025</span>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main_enhanced.js') }}"></script>
+</body>
+</html>
