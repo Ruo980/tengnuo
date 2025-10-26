@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>推荐缩容分析 - PSM资源管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin-top: 30px;
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: none;
+            overflow: hidden;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+        .form-control, .form-select {            border-radius: 8px;            border: 1px solid #ced4da;            transition: all 0.3s ease;            padding: 12px;            width: 100%;        }
+        .form-control:focus, .form-select:focus {            border-color: #f093fb;            box-shadow: 0 0 0 3px rgba(240, 147, 251, 0.1);        }
+        /* 确保DataTables的选择框样式一致 */
+        .dataTables_length select.form-select {
+            min-width: 80px;
+            width: auto;
+        }
+        /* 表格列自适应，避免内容换行 */
+        .table th {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+        .table td {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 500;
+        }
+        .result-section {
+            margin-top: 30px;
+        }
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .table thead {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .table th,
+        .table td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+        .table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        .stats-row {
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f093fb;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .alert {
+            border-radius: 8px;
+            border: none;
+            margin: 20px 0;
+        }
+        .form-text {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        .btn-back-to-home {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #673ab7;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 500;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-back-to-home:hover {
+            background: white;
+            color: #512da8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+        }
+        
+        .btn-back-to-home svg {
+            margin-right: 8px;
+        }
+        .highlight {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="btn-back-to-home">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+            </svg>
+            返回主页
+        </a>
+        
+        <h1 class="mb-4">推荐缩容分析</h1>
+        
+        <div class="card">
+            <div class="card-header">
+                推荐缩容分析
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">基于服务利用率分析，识别低利用率集群并按建议缩容核数排序</p>
+                
+                <form method="post" action="/analyze_recommend">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="idc" class="form-label">机房 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="idc" name="idc" placeholder="请输入机房标识，如：MY" required>
+                                <div class="form-text">输入机房的标识符，例如：MY、MY2、MY3</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="pool" class="form-label">资源池 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="pool" name="pool" placeholder="格式：Physical Cluster/IaaS Cluster" required>
+                                <div class="form-text">请使用"Physical Cluster/IaaS Cluster"格式，如：Zelda/default</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="min_save_cores" class="form-label">最小建议缩容核数 (可选)</label>
+                                <input type="number" class="form-control" id="min_save_cores" name="min_save_cores" min="0" placeholder="默认为0">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="data_file" class="form-label">数据文件 (可选)</label>
+                                <select class="form-select" id="data_file" name="data_file">
+                                    <option value="all.xlsx" selected>默认数据 (all.xlsx)</option>
+                                    <option value="all-test.xlsx">测试数据 (all-test.xlsx)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn btn-primary">分析推荐缩容</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        {% if results %}
+        <div class="card result-section">
+            <div class="card-header">
+                推荐缩容结果
+            </div>
+            <div class="card-body">
+                {% if results|length > 0 %}
+                <div class="stats-row row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-number">{{ results|length }}</div>
+                            <div class="stat-label">可缩容服务数</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-number">{{ total_cpu }}</div>
+                            <div class="stat-label">可节省CPU核数</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-number">{{ total_clusters }}</div>
+                            <div class="stat-label">符合条件的集群数</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h4 class="text-gray-700 mb-3">详细列表</h4>
+                </div>
+                
+                <div class="overflow-auto">
+                    <table id="resultsTable" class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>PSM</th>
+                                <th>cluster_id</th>
+                                <th>package</th>
+                                <th>cpu_limit</th>
+                                <th>mem_limit</th>
+                                <th>save_cores</th>
+                                <th>cpu_util_max_1days</th>
+                                <th>cpu_util_max_7days</th>
+                                <th>mem_util_max_7days</th>
+                                <th>business_line</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in results %}
+                            <tr {% if row.save_cores > 10 %}class="highlight"{% endif %}>
+                                <td>{{ row.psm }}</td>
+                                <td>{{ row.cluster_id }}</td>
+                                <td>{{ row.package|default('-', true) }}</td>
+                                <td>{{ row.cpu_limit }}</td>
+                                <td>{{ row.mem_limit }}</td>
+                                <td>{{ row.save_cores }}</td>
+                                <td>{{ row.cpu_util_max_1days|default('-', true) }}</td>
+                                <td>{{ row.cpu_util_max_7days|default('-', true) }}</td>
+                                <td>{{ row.mem_util_max_7days|default('-', true) }}</td>
+                                <td>{{ row.business_line }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 不需要Excel下载功能 -->
+                
+                <div class="alert alert-info mt-4">
+                    <strong>缩容建议：</strong>
+                    <ul class="mb-0">
+                        <li>建议优先缩容建议缩容核数大于10的集群（表格中高亮显示）</li>
+                        <li>缩容前请确认集群实际运行情况</li>
+                        <li>建议分批进行缩容，每次缩容后观察服务运行状态</li>
+                        <li>预计可释放总CPU: {{ total_cpu }} 核</li>
+                    </ul>
+                </div>
+                {% else %}
+                <div class="alert alert-warning">
+                    <strong>未找到符合条件的集群</strong>: 在所选的机房和资源池中没有找到可以推荐缩容的集群。
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#resultsTable').DataTable({
+                "searching": true,
+                "ordering": true,
+                "pageLength": 10,
+                "lengthMenu": [10, 25, 50, 100],
+                "order": [[4, "desc"]] // 默认按建议缩容核数降序排序
+            });
+        });
+    </script>
+</body>
+</html>
